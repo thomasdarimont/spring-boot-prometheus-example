@@ -211,8 +211,8 @@ process_resident_memory_bytes 3.35212544E8
 
 ## Prometheus configuration
 
-You can find the configuration for Prometheus in the `/prometheus/Prometheus.yml` file.
-There I set up a monitoring target for our Spring Boot app. 
+You can find the configuration for Prometheus in the `/prometheus/prometheus.yml` file. 
+There I set up a monitoring target for our Spring Boot app in the `scrape_configs` config section. 
 
 ## Start Prometheus & Grafana Containers
 ```
@@ -248,7 +248,10 @@ Point your browser to http://prometheus.local:9090/targets and look for
 the list of target hosts. In this demo we configured prometheus itself 
 as well as the spring boot app as targets.
 
-### Spring-Boot-App is marked as down
+### Spring-Boot-App is marked as down?
+
+Is the IP of your target host configured in `/prometheus/prometheus.yml` 
+file visible for the promotheus container?
 
 You might need to create a container network or configure your firewall 
 to allow the prometheus docker container to access your docker host.
