@@ -3,6 +3,38 @@
 Simple example for exporting metrics to [Prometheus](https://prometheus.io/) from a Spring Boot app.
 We use the Prometheus [java_client](https://github.com/prometheus/client_java). 
 
+The configuration is contained with the [MonitoringConfig](https://github.com/thomasdarimont/spring-boot-prometheus-example/blob/master/src/main/java/de/tdlabs/training/MonitoringConfig.java) class:
+```java
+import io.prometheus.client.exporter.MetricsServlet;
+import io.prometheus.client.hotspot.DefaultExports;
+import io.prometheus.client.spring.boot.SpringBootMetricsCollector;
+import org.springframework.boot.actuate.endpoint.PublicMetrics;
+import org.springframework.boot.web.servlet.ServletRegistrationBean;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+
+import java.util.Collection;
+
+@Configuration
+class MonitoringConfig {
+
+    @Bean
+    SpringBootMetricsCollector springBootMetricsCollector(Collection<PublicMetrics> publicMetrics) {
+
+        SpringBootMetricsCollector springBootMetricsCollector = new SpringBootMetricsCollector(publicMetrics);
+        springBootMetricsCollector.register();
+
+        return springBootMetricsCollector;
+    }
+
+    @Bean
+    ServletRegistrationBean servletRegistrationBean() {
+        DefaultExports.initialize();
+        return new ServletRegistrationBean(new MetricsServlet(), "/prometheus");
+    }
+}
+```
+
 ## Build
 ```
 mvn clean package
@@ -176,6 +208,11 @@ process_resident_memory_bytes 3.35212544E8
 ```
 
 # Prometheus & Grafana Docker container
+
+## Prometheus configuration
+
+You can find the configuration for Prometheus in the `/prometheus/Prometheus.yml` file.
+There I set up a monitoring target for our Spring Boot app. 
 
 ## Start Prometheus & Grafana Containers
 ```
