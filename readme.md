@@ -174,3 +174,61 @@ process_virtual_memory_bytes 7.97188096E9
 # TYPE process_resident_memory_bytes gauge
 process_resident_memory_bytes 3.35212544E8
 ```
+
+# Prometheus & Grafana Docker container
+
+## Start Prometheus & Grafana Containers
+```
+cd prometheus-grafana
+docker-compose up
+```
+
+You should now see the Prometheus & Grafana Containers booting:
+```
+Creating network "prometheusgrafana_default" with the default driver
+Creating prometheusgrafana_prometheus_1
+Creating prometheusgrafana_grafana_1
+Attaching to prometheusgrafana_prometheus_1, prometheusgrafana_grafana_1
+prometheus_1 | time="2016-10-11T19:53:12Z" level=info msg="Starting prometheus (version=1.2.1, branch=master, revision=dd66f2e94b2b662804b9aa1b6a50587b990ba8b7)" source="main.go:75" 
+prometheus_1 | time="2016-10-11T19:53:12Z" level=info msg="Build context (go=go1.7.1, user=root@fd9b0daff6bd, date=20161010-15:58:23)" source="main.go:76" 
+prometheus_1 | time="2016-10-11T19:53:12Z" level=info msg="Loading configuration file /etc/prometheus/prometheus.yml" source="main.go:247" 
+prometheus_1 | time="2016-10-11T19:53:12Z" level=info msg="Loading series map and head chunks..." source="storage.go:354" 
+prometheus_1 | time="2016-10-11T19:53:12Z" level=info msg="0 series loaded." source="storage.go:359" 
+prometheus_1 | time="2016-10-11T19:53:12Z" level=info msg="Listening on :9090" source="web.go:240" 
+prometheus_1 | time="2016-10-11T19:53:12Z" level=info msg="Starting target manager..." source="targetmanager.go:76" 
+prometheus_1 | time="2016-10-11T19:53:12Z" level=warning msg="No AlertManagers configured, not dispatching any alerts" source="notifier.go:176" 
+grafana_1    | t=2016-10-11T19:53:12+0000 lvl=info msg="Starting Grafana" logger=main version=3.1.1 commit=a4d2708 compiled=2016-08-01T10:20:16+0000
+grafana_1    | t=2016-10-11T19:53:12+0000 lvl=info msg="Config loaded from" logger=settings file=/usr/share/grafana/conf/defaults.ini
+grafana_1    | t=2016-10-11T19:53:12+0000 lvl=info msg="Config loaded from" logger=settings file=/etc/grafana/grafana.ini
+grafana_1    | t=2016-10-11T19:53:12+0000 lvl=info msg="Config overriden from command line" logger=settings arg="default.paths.data=/var/lib/grafana"
+grafana_1    | t=2016-10-11T19:53:12+0000 lvl=info msg="Config overriden from command line" logger=settings arg="default.paths.logs=/var/log/grafana"
+...
+```
+
+## Open Prometheus
+
+Point your browser to http://prometheus.local:9090/targets and look for
+the list of target hosts. In this demo we configured prometheus itself 
+as well as the spring boot app as targets.
+
+### Spring-Boot-App is marked as down
+
+You might need to create a container network or configure your firewall 
+to allow the prometheus docker container to access your docker host.
+In case of the latter you could try
+
+To allow traffic from interface docker0 to access the local dockerhost
+create the following IPTables rule:
+```
+sudo iptables -A INPUT -i docker0 -j ACCEPT
+```
+
+To remove the IPTables rule run this: 
+```
+sudo iptables -D INPUT -i docker0 -j ACCEPT
+```
+
+## Shutting down the contains
+```
+docker-compose down
+```
